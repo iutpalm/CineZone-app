@@ -23,3 +23,27 @@ cinezone-app/
 ├── renderer.js         # Frontend engine handling UI interaction, search, & logic
 ├── styles.css          # Premium Netflix/Plex dark theme styling definitions
 └── index.html          # HTML5 layout structure for the layout viewports
+
+
+
+1. Initialize the Environment
+If you haven't already created the project folder, open your command line and run:
+
+Bash
+mkdir cinezone-app
+cd cinezone-app
+
+2. Install Dependencies
+Install Electron as a development dependency and basic-ftp to handle server handshakes:
+
+Bash
+npm install electron --save-dev
+npm install basic-ftp
+
+3.Run the Application
+Launch your media environment hub by executing the shortcut start script:
+
+Bash
+npm start
+
+Dynamic Content Extraction: The search filter mechanism relies on your files having the year format in their titles (e.g., Movie Title (2026).mp4).
