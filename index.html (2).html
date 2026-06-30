@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DhakaFlix Premium Player</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <button class="mobile-menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰ Menu</button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="app-container">
+        <aside class="sidebar" id="appSidebar">
+            <div class="logo">Dhaka<span>Flix</span></div>
+            <nav class="nav-menu">
+                <button class="nav-item active" onclick="changeDirectory('/')">🏠 Home</button>
+                <button class="nav-item" onclick="changeDirectory('/Movies')">🎬 Movies</button>
+                <button class="nav-item" onclick="changeDirectory('/TV Shows')">📺 TV Shows</button>
+                <button class="nav-item" onclick="changeDirectory('/Animation')">🧸 Animation</button>
+            </nav>
+            <div class="path-display" id="currentPath">Path: /</div>
+        </aside>
+
+        <main class="main-content">
+            
+            <section class="featured-slider-container">
+                <div class="slider-track" id="sliderTrack">
+                    </div>
+            </section>
+
+            <header class="top-bar">
+                <button id="backBtn" class="back-btn" onclick="goBack()">⬅ Back</button>
+                <h1 id="categoryTitle">All Media</h1>
+            </header>
+
+            <div class="media-grid" id="mediaGrid">
+                <div class="loading">Scanning DhakaFlix Library...</div>
+            </div>
+        </main>
+    </div>
+
+    <div class="video-modal" id="videoModal">
+        <button class="close-modal" onclick="closeVideo()">✕ Close</button>
+        <div class="video-container">
+            <video id="videoPlayer" controls autoplay></video>
+            <h2 id="modalVideoTitle" class="modal-title">Movie Title</h2>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>
