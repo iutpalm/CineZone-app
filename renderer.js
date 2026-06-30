@@ -1,134 +1,148 @@
-// Master Local Store Cache Memory
-let masterLibrary = [];
+let masterLibraryCache = [];
 
-// Popular Hero Backup wallpapers
-const heroShowcases = [
-    { title: "Aadu 3 (2026)", img: "https://images6.alphacoders.com/135/1351676.jpeg" },
-    { title: "The Raja Saab (2026)", img: "https://images8.alphacoders.com/134/1347008.jpeg" },
-    { title: "Ustaad Bhagat Singh (2026)", img: "https://images8.alphacoders.com/131/1314995.jpeg" }
+// Curated array of production backdrop visuals for the interface spotlight header
+const premiumShowcases = [
+    { title: "Deadpool & Wolverine", img: "https://images6.alphacoders.com/135/1351676.jpeg" },
+    { title: "Dune: Part Two", img: "https://images8.alphacoders.com/134/1347008.jpeg" },
+    { title: "Spider-Man: Beyond the Spider-Verse", img: "https://images8.alphacoders.com/131/1314995.jpeg" }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
-    buildPopcornflixDashboard();
+    buildPopcornflixHub();
 });
 
-async function buildPopcornflixDashboard() {
-    setupHeroBanner();
+async function buildPopcornflixHub() {
+    setupCinematicHero();
     
-    // Define the scanning tasks for server 172.16.50.14
-    const pathways = [
+    const operationalRails = [
         { rowId: 'rowTrending', path: '/English Movies (1080p)/(2026)' },
         { rowId: 'rowSouthHindi', path: '/SOUTH INDIAN MOVIES/Hindi Dubbed/(2026)' },
         { rowId: 'rowIMDb', path: '/IMDb Top-250 Movies' },
         { rowId: 'rowAnimation', path: '/Animation Movies (1080p)' }
     ];
 
-    // Concurrently fetch lists across the network link
-    for (const target of pathways) {
-        const result = await window.dhakaFlixAPI.fetchDirectory({ 
+    for (const rail of operationalRails) {
+        const payload = await window.dhakaFlixAPI.fetchDirectory({ 
             serverKey: 'MOVIES_14', 
-            targetPath: target.path 
+            targetPath: rail.path 
         });
 
-        if (!result.error) {
-            // Clean out empty directory markers, process real film media elements
-            const videos = result.filter(file => !file.isDirectory && file.name.toLowerCase().match(/\.(mp4|mkv|webm|avi)$/));
+        if (!payload.error) {
+            const parsedVideos = payload.filter(f => !f.isDirectory && f.name.toLowerCase().match(/\.(mp4|mkv|webm|avi)$/));
             
-            // Map the media items into the master search registry
-            videos.forEach(v => masterLibrary.push(v));
+            // Push items into query cache index memory registry
+            parsedVideos.forEach(v => masterLibraryCache.push(v));
             
-            populateRow(target.rowId, videos);
+            renderStreamingRow(rail.rowId, parsedVideos);
         } else {
-            document.getElementById(target.rowId).innerHTML = `<div style="color:var(--text-muted);font-size:13px;">Row temporary unavailable offline.</div>`;
+            document.getElementById(rail.rowId).innerHTML = `<div style="color:var(--text-secondary);font-size:13px;padding:10px;">Cluster Node Unreachable.</div>`;
         }
     }
 }
 
-function populateRow(rowId, elementsList) {
-    const targetRow = document.getElementById(rowId);
-    targetRow.innerHTML = '';
+function renderStreamingRow(rowElementId, dataset) {
+    const targetContainer = document.getElementById(rowElementId);
+    targetContainer.innerHTML = '';
 
-    if (elementsList.length === 0) {
-        targetRow.innerHTML = '<div style="color:var(--text-muted);padding:10px;">No movies found inside this path folder.</div>';
+    if (dataset.length === 0) {
+        targetContainer.innerHTML = '<div style="color:var(--text-secondary);padding:10px;font-size:13px;">No matching assets found on disk.</div>';
         return;
     }
 
-    elementsList.forEach(movie => {
-        const card = document.createElement('div');
-        card.className = 'popcorn-card';
-        card.innerHTML = `
-            <div class="poster-frame">🎬</div>
-            <div class="movie-name" title="${movie.name}">${movie.name}</div>
+    dataset.forEach(movie => {
+        // Clean up the string name for display on the card
+        let cleanName = movie.name.replace(/\([^)]*\)|1080p|720p|\[[^\]]*\]|\.\w+$/gi, '').trim();
+        
+        // Isolate streaming quality parameters from the file name
+        let qualityTag = "HD";
+        if (movie.name.toLowerCase().includes("1080p")) qualityTag = "1080p";
+        else if (movie.name.toLowerCase().includes("720p")) qualityTag = "720p";
+        if (movie.name.toLowerCase().includes("audio")) qualityTag += " [DUAL]";
+
+        const movieCard = document.createElement('div');
+        movieCard.className = 'popcorn-card';
+        movieCard.innerHTML = `
+            <div class="poster-canvas">
+                <div class="poster-fallback-art">🎬</div>
+                <div class="poster-backdrop-gradient"></div>
+                <div class="poster-info-overlay">
+                    <span class="card-tag">${qualityTag}</span>
+                    <div class="movie-name">${cleanName}</div>
+                </div>
+            </div>
         `;
-        card.onclick = () => playVideo(movie.url, movie.name);
-        targetRow.appendChild(card);
+        movieCard.onclick = () => playVideo(movie.url, movie.name);
+        targetContainer.appendChild(movieCard);
     });
 }
 
-function setupHeroBanner() {
-    const chooseFeatured = heroShowcases[Math.floor(Math.random() * heroShowcases.length)];
-    const banner = document.getElementById('heroBanner');
-    banner.style.backgroundImage = `url('${chooseFeatured.img}')`;
-    document.getElementById('heroTitle').innerText = chooseFeatured.title;
+function setupCinematicHero() {
+    const randomPick = premiumShowcases[Math.floor(Math.random() * premiumShowcases.length)];
+    const bannerBox = document.getElementById('heroBanner');
+    
+    bannerBox.style.backgroundImage = `url('${randomPick.img}')`;
+    document.getElementById('heroTitle').innerText = randomPick.title;
     
     document.getElementById('heroPlayBtn').onclick = () => {
-        // Find if the title exists in the master list, else trigger search feedback
-        document.getElementById('globalSearch').value = chooseFeatured.title;
+        document.getElementById('globalSearch').value = randomPick.title;
         searchLibrary();
     };
 }
 
-// Global Instant Search Execution Layer
 function searchLibrary() {
-    const keyword = document.getElementById('globalSearch').value.toLowerCase().trim();
-    const browseView = document.getElementById('browseContainer');
-    const searchView = document.getElementById('searchContainer');
-    const searchGrid = document.getElementById('searchGrid');
+    const query = document.getElementById('globalSearch').value.toLowerCase().trim();
+    const browsePanel = document.getElementById('browseContainer');
+    const searchPanel = document.getElementById('searchContainer');
+    const searchDisplayGrid = document.getElementById('searchGrid');
 
-    if (keyword === '') {
-        browseView.style.display = 'block';
-        searchView.style.display = 'none';
+    if (query === '') {
+        browsePanel.style.display = 'block';
+        searchPanel.style.display = 'none';
         return;
     }
 
-    browseView.style.display = 'none';
-    searchView.style.display = 'block';
-    
-    // Filter out matches from the cached memory registry
-    const matched = masterLibrary.filter(item => item.name.toLowerCase().includes(keyword));
-    
-    searchGrid.innerHTML = '';
-    document.getElementById('searchTitle').innerText = `Search results for: "${keyword}" (${matched.length})`;
+    browsePanel.style.display = 'none';
+    searchPanel.style.display = 'block';
 
-    if (matched.length === 0) {
-        searchGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">No exact matching titles found in memory.</div>';
+    const filteringHits = masterLibraryCache.filter(item => item.name.toLowerCase().includes(query));
+    searchDisplayGrid.innerHTML = '';
+    document.getElementById('searchTitle').innerText = `Search results for: "${query}" (${filteringHits.length})`;
+
+    if (filteringHits.length === 0) {
+        searchDisplayGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-secondary);padding:60px;">No matching titles mapped in connection cache index.</div>';
         return;
     }
 
-    matched.forEach(movie => {
-        const card = document.createElement('div');
-        card.className = 'popcorn-card';
-        card.innerHTML = `
-            <div class="poster-frame">🎬</div>
-            <div class="movie-name" title="${movie.name}">${movie.name}</div>
+    filteringHits.forEach(movie => {
+        let cleanName = movie.name.replace(/\([^)]*\)|1080p|720p|\[[^\]]*\]|\.\w+$/gi, '').trim();
+        const movieCard = document.createElement('div');
+        movieCard.className = 'popcorn-card';
+        movieCard.innerHTML = `
+            <div class="poster-canvas">
+                <div class="poster-fallback-art">🎬</div>
+                <div class="poster-backdrop-gradient"></div>
+                <div class="poster-info-overlay">
+                    <div class="movie-name">${cleanName}</div>
+                </div>
+            </div>
         `;
-        card.onclick = () => playVideo(movie.url, movie.name);
-        searchGrid.appendChild(card);
+        movieCard.onclick = () => playVideo(movie.url, movie.name);
+        searchDisplayGrid.appendChild(movieCard);
     });
 }
 
 function playVideo(url, title) {
-    const modal = document.getElementById('videoModal');
-    const player = document.getElementById('videoPlayer');
+    const windowModal = document.getElementById('videoModal');
+    const videoNode = document.getElementById('videoPlayer');
     document.getElementById('modalVideoTitle').innerText = title;
-    player.src = url;
-    modal.style.display = 'flex';
+    videoNode.src = url;
+    windowModal.style.display = 'flex';
 }
 
 function closeVideo() {
-    const player = document.getElementById('videoPlayer');
-    player.pause();
-    player.src = '';
+    const videoNode = document.getElementById('videoPlayer');
+    videoNode.pause();
+    videoNode.src = '';
     document.getElementById('videoModal').style.display = 'none';
 }
 
