@@ -1,141 +1,255 @@
-/* --- FEATURED AUTOMATED SLIDER --- */
-.menu-header {
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--accent-color);
-    letter-spacing: 1px;
-    margin-top: 20px;
-    margin-bottom: 5px;
-    padding-left: 10px;
-    opacity: 0.8;
+:root {
+    --bg-color: #0c0d14;
+    --sidebar-color: #06070a;
+    --accent-color: #ff3344; /* Popcornflix red/pink accent */
+    --text-color: #ffffff;
+    --text-muted: #8a8d98;
+    --card-bg: #161824;
+    --card-hover: #222538;
 }
 
-.featured-slider-container {
-    width: 100%;
-    height: 220px;
-    border-radius: 12px;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
     overflow: hidden;
-    margin-bottom: 30px;
-    background: #1f1f1f;
-    position: relative;
-    border: 1px solid #252525;
+    height: 100vh;
 }
 
-.slider-track {
+.app-container {
     display: flex;
-    width: 100%;
-    height: 100%;
-    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    height: 100vh;
 }
 
-.slide {
-    min-width: 100%;
-    height: 100%;
-    position: relative;
+/* Sidebar layout */
+.sidebar {
+    width: 260px;
+    background-color: var(--sidebar-color);
+    padding: 30px 20px;
     display: flex;
-    align-items: flex-end;
+    flex-direction: column;
+    border-right: 1px solid #161824;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-color);
+    margin-bottom: 40px;
+}
+
+.logo span { color: var(--accent-color); }
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-grow: 1;
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 14px 18px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.nav-item:hover, .nav-item.active {
+    color: var(--text-color);
+    background-color: var(--card-bg);
+}
+
+.server-status {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Main Window Dashboard */
+.main-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 50px;
+}
+
+.popcorn-header {
+    padding: 20px 40px;
+    background: linear-gradient(to bottom, rgba(12,13,20,1), rgba(12,13,20,0));
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.search-box input {
+    width: 350px;
+    background-color: var(--card-bg);
+    border: 1px solid #222538;
+    padding: 12px 20px;
+    border-radius: 20px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+}
+
+/* Hero Display Showcase Banner */
+.hero-banner {
+    height: 380px;
+    margin: 0 40px 30px 40px;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
     background-size: cover;
     background-position: center;
+    background-color: #1a1a2e;
 }
 
-/* Fallback gradient styling if movie posters aren't found */
-.slide-gradient {
+.hero-gradient {
     position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to top, rgba(20,20,20,1) 15%, rgba(0,0,0,0.3) 100%);
-    z-index: 1;
+    background: linear-gradient(to right, rgba(12,13,20,0.9) 30%, rgba(12,13,20,0.2) 100%);
 }
 
-.slide-content {
+.hero-content {
     position: relative;
-    z-index: 2;
-    padding: 25px;
+    z-index: 5;
+    padding: 60px;
     max-width: 600px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
 }
 
-.slide-tag {
-    background-color: var(--accent-color);
-    color: white;
+.badge {
+    background: var(--accent-color);
+    padding: 4px 8px;
     font-size: 11px;
     font-weight: 700;
-    padding: 4px 8px;
     border-radius: 4px;
-    text-transform: uppercase;
-    display: inline-block;
-    margin-bottom: 8px;
+    margin-bottom: 15px;
 }
 
-.slide-title {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 5px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+#heroTitle {
+    font-size: 38px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    line-height: 1.2;
 }
 
-/* --- MOBILE RESPONSIVENESS AND COLLAPSIBLE DRAWER --- */
-.mobile-menu-toggle {
-    display: none; /* Hidden by default on desktop viewports */
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    z-index: 1000;
-    background-color: var(--accent-color);
-    color: white;
+.play-btn {
+    background: white;
+    color: black;
     border: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-weight: bold;
+    padding: 12px 28px;
+    font-weight: 700;
+    font-size: 16px;
+    border-radius: 25px;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
 }
 
-.sidebar-overlay {
-    display: none;
+.play-btn:hover { transform: scale(1.05); }
+
+/* Horizontal Movie Rails Layout */
+.movie-section {
+    margin-bottom: 35px;
+    padding-left: 40px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #f0f1f5;
+}
+
+.horizontal-scroll {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    scroll-behavior: smooth;
+}
+
+.horizontal-scroll::-webkit-scrollbar { height: 6px; }
+.horizontal-scroll::-webkit-scrollbar-thumb { background: #222538; border-radius: 4px; }
+
+/* Poster Cards Design */
+.popcorn-card {
+    min-width: 170px;
+    max-width: 170px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.popcorn-card:hover {
+    transform: scale(1.06);
+}
+
+.poster-frame {
+    width: 100%;
+    height: 240px;
+    background: linear-gradient(135deg, #161824, #0c0d14);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    border: 1px solid #1f2235;
+    margin-bottom: 10px;
+}
+
+.movie-name {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #e2e4ed;
+}
+
+/* Search Grid fallbacks */
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 25px;
+    padding: 0 40px;
+}
+
+/* Video Modal overlay styling */
+.video-modal {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 998;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: black; display: none;
+    justify-content: center; align-items: center; z-index: 1000;
 }
 
+.video-container { width: 90%; max-width: 1000px; }
+video { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px;}
+.close-modal { position: absolute; top: 20px; right: 20px; background: var(--accent-color); color: #fff; padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px;}
+
+/* Mobile handling layout toggle properties */
+.mobile-menu-toggle { display: none; }
 @media (max-width: 768px) {
-    .mobile-menu-toggle {
-        display: block; /* Show menu button on small screen layouts */
-    }
-
-    .sidebar {
-        position: fixed;
-        top: 0;
-        left: -280px; /* Fully hidden off-screen on the left side */
-        height: 100vh;
-        z-index: 999;
-        transition: left 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-        box-shadow: 5px 0 15px rgba(0,0,0,0.7);
-    }
-
-    /* Triggered when menu button is clicked */
-    .sidebar.open {
-        left: 0; 
-    }
-
-    .sidebar-overlay.visible {
-        display: block;
-    }
-
-    .main-content {
-        padding: 80px 20px 20px 20px; /* Extra top padding to make space for the floating menu bar button */
-    }
-
-    .featured-slider-container {
-        height: 160px; /* Slimmer banner setup for native mobile scaling dimensions */
-    }
-
-    .slide-title {
-        font-size: 18px;
-    }
+    .mobile-menu-toggle { display: block; position: fixed; top: 15px; left: 15px; z-index: 200; background: var(--accent-color); color: white; border: none; padding: 8px 12px; border-radius: 4px;}
+    .sidebar { position: fixed; left: -260px; height: 100vh; z-index: 199; transition: left 0.3s; }
+    .sidebar.open { left: 0; }
+    .sidebar-overlay.visible { display: block; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 198; }
+    .hero-banner { margin: 60px 15px 20px 15px; height: 250px; }
+    .movie-section { padding-left: 15px; }
+    .search-box input { width: 100%; }
 }
