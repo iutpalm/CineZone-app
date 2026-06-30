@@ -8,59 +8,89 @@
 </head>
 <body>
 
-    <button class="mobile-menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰ Menu</button>
+    <!-- Mobile Floating Header -->
+    <header class="mobile-header">
+        <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="logo">Cine<span>Zone</span></div>
+    </header>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
     <div class="app-container">
+        <!-- Premium Left Sidebar Navigation Drawer -->
         <aside class="sidebar" id="appSidebar">
-            <div class="logo">Cine<span>Zone</span></div>
+            <div class="logo hide-on-mobile">Cine<span>Zone</span></div>
             <nav class="nav-menu">
+                <span class="nav-heading">Discover</span>
                 <button class="nav-item active" onclick="showSection('home')">🏠 Home</button>
-                <button class="nav-item" onclick="showSection('movies')">🎬 Movies</button>
-                <button class="nav-item" onclick="showSection('series')">📺 TV & Web Series</button>
+                <button class="nav-item" onclick="showSection('movies')">🎬 Free Movies</button>
+                <button class="nav-item" onclick="showSection('series')">📺 TV Shows</button>
+                
+                <span class="nav-heading">Server Hub</span>
+                <div class="server-badge">● Online: 172.16.50.14</div>
             </nav>
-            <div class="server-status">Connected to: 172.16.50.14</div>
         </aside>
 
+        <!-- Immersive Main Dashboard Viewport -->
         <main class="main-content">
             
-            <header class="popcorn-header">
-                <div class="search-box">
-                    <input type="text" id="globalSearch" placeholder="🔍 Search movies, TV shows by title..." oninput="searchLibrary()">
+            <!-- Global Premium Top Navigation Bar -->
+            <header class="popcorn-top-nav">
+                <div class="nav-pills-container">
+                    <button class="pill active">All</button>
+                    <button class="pill">Trending</button>
+                    <button class="pill">New Arrivals</button>
                 </div>
-            </nav>
-
-            <section class="hero-banner" id="heroBanner">
-                <div class="hero-gradient"></div>
-                <div class="hero-content">
-                    <span class="badge">POPULAR</span>
-                    <h1 id="heroTitle">Loading Feature...</h1>
-                    <button class="play-btn" id="heroPlayBtn">▶ Play Now</button>
+                <div class="search-wrapper">
+                    <input type="text" id="globalSearch" placeholder="🔍 Search titles, genres, or years..." oninput="searchLibrary()">
                 </div>
-            </section>
+            </header>
 
+            <!-- Dynamic Popcornflix Browse Container -->
             <div id="browseContainer">
+                <!-- Immersive Premium Hero Showcase Spotlight Box -->
+                <section class="hero-banner" id="heroBanner">
+                    <div class="hero-gradient-overlay"></div>
+                    <div class="hero-content">
+                        <span class="popcorn-tag">FEATURED SPOTLIGHT</span>
+                        <h1 id="heroTitle">Loading Blockbuster...</h1>
+                        <p class="hero-description">Stream this hit title completely free in Full Ultra HD audio and video quality straight from your local media vault cluster grid.</p>
+                        <div class="hero-actions">
+                            <button class="play-btn-primary" id="heroPlayBtn">▶ WATCH FREE</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Cinematic Movie Rows -->
                 <section class="movie-section">
-                    <h2 class="section-title">🔥 Trending 2026 Uploads</h2>
-                    <div class="horizontal-scroll" id="rowTrending"></div>
+                    <h2 class="section-title">🔥 Trending Now</h2>
+                    <div class="scroll-wrapper-box">
+                        <div class="horizontal-scroll" id="rowTrending"></div>
+                    </div>
                 </section>
 
                 <section class="movie-section">
                     <h2 class="section-title">🌴 South Indian Hindi Dubbed</h2>
-                    <div class="horizontal-scroll" id="rowSouthHindi"></div>
+                    <div class="scroll-wrapper-box">
+                        <div class="horizontal-scroll" id="rowSouthHindi"></div>
+                    </div>
                 </section>
 
                 <section class="movie-section">
-                    <h2 class="section-title">⭐ IMDb Top-250 Masterpieces</h2>
-                    <div class="horizontal-scroll" id="rowIMDb"></div>
+                    <h2 class="section-title">⭐ IMDb Top Rated Masterpieces</h2>
+                    <div class="scroll-wrapper-box">
+                        <div class="horizontal-scroll" id="rowIMDb"></div>
+                    </div>
                 </section>
 
                 <section class="movie-section">
-                    <h2 class="section-title">🧸 Animation Favorites</h2>
-                    <div class="horizontal-scroll" id="rowAnimation"></div>
+                    <h2 class="section-title">🧸 Animation Family Hits</h2>
+                    <div class="scroll-wrapper-box">
+                        <div class="horizontal-scroll" id="rowAnimation"></div>
+                    </div>
                 </section>
             </div>
 
+            <!-- Search Results Dashboard Area Wrapper -->
             <div id="searchContainer" style="display: none;">
                 <h2 class="section-title" id="searchTitle">Search Results</h2>
                 <div class="media-grid" id="searchGrid"></div>
@@ -69,11 +99,12 @@
         </main>
     </div>
 
+    <!-- Video Theater Overlay Framework Screen Box -->
     <div class="video-modal" id="videoModal">
-        <button class="close-modal" onclick="closeVideo()">✕ Close</button>
+        <button class="close-modal" onclick="closeVideo()">✕ CLOSE</button>
         <div class="video-container">
             <video id="videoPlayer" controls autoplay></video>
-            <h2 id="modalVideoTitle" class="modal-title">Movie Playback</h2>
+            <h2 id="modalVideoTitle" class="modal-title">Movie Title</h2>
         </div>
     </div>
 
