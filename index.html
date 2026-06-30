@@ -3,111 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineZone | Watch Free Movies & TV Shows</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>PopFlix BDIX - Local Streaming Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased">
 
-    <!-- Mobile Floating Header -->
-    <header class="mobile-header">
-        <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
-        <div class="logo">Cine<span>Zone</span></div>
-    </header>
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <div id="root"></div>
 
-    <div class="app-container">
-        <!-- Premium Left Sidebar Navigation Drawer -->
-        <aside class="sidebar" id="appSidebar">
-            <div class="logo hide-on-mobile">Cine<span>Zone</span></div>
-            <nav class="nav-menu">
-                <span class="nav-heading">Discover</span>
-                <button class="nav-item active" onclick="showSection('home')">🏠 Home</button>
-                <button class="nav-item" onclick="showSection('movies')">🎬 Free Movies</button>
-                <button class="nav-item" onclick="showSection('series')">📺 TV Shows</button>
-                
-                <span class="nav-heading">Server Hub</span>
-                <div class="server-badge">● Online: 172.16.50.14</div>
-            </nav>
-        </aside>
+    <script type="text/babel">
+        // Dummy data modeled exactly after the DhakaFlix FTP directory scrape pipeline output
+        const crawledData = [
+            { id: 1, title: "Avatar: Fire and Ash", year: "2025", quality: "1080P", genre: "Sci-Fi", category: "Movies", poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&q=80", url: "http://172.16.50.14/DHAKA-FLIX-14/ENGLISH-MOVIES/Avatar2025.mkv" },
+            { id: 2, title: "The Batman Part II", year: "2026", quality: "4K UHD", genre: "Action", category: "Movies", poster: "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=400&q=80", url: "http://172.16.50.14/DHAKA-FLIX-14/ENGLISH-MOVIES/Batman2026.mkv" },
+            { id: 3, title: "Stranger Things Season 5", year: "2025", quality: "WEBRip", genre: "Drama", category: "TV Series", poster: "https://images.unsplash.com/photo-1574375927938-d5a98e8edd86?w=400&q=80", url: "http://172.16.50.14/DHAKA-FLIX-12/TV-WEB-SERIES/StrangerThingsS05E01.mkv" },
+            { id: 4, title: "Toy Story 5", year: "2026", quality: "720P", genre: "Animation", category: "Animation", poster: "https://images.unsplash.com/photo-1608889174637-3c44f6326f2a?w=400&q=80", url: "http://172.16.50.14/DHAKA-FLIX-7/ANIMATION/ToyStory5.mkv" },
+            { id: 5, title: "Superman", year: "2025", quality: "1080P", genre: "Action", category: "Movies", poster: "https://images.unsplash.com/photo-1568832359672-e36cf5d74f54?w=400&q=80", url: "http://172.16.50.14/DHAKA-FLIX-14/ENGLISH-MOVIES/Superman2025.mkv" }
+        ];
 
-        <!-- Immersive Main Dashboard Viewport -->
-        <main class="main-content">
-            
-            <!-- Global Premium Top Navigation Bar -->
-            <header class="popcorn-top-nav">
-                <div class="nav-pills-container">
-                    <button class="pill active">All</button>
-                    <button class="pill">Trending</button>
-                    <button class="pill">New Arrivals</button>
-                </div>
-                <div class="search-wrapper">
-                    <input type="text" id="globalSearch" placeholder="🔍 Search titles, genres, or years..." oninput="searchLibrary()">
-                </div>
-            </header>
+        function App() {
+            const [mediaItems, setMediaItems] = React.useState(crawledData);
+            const [searchQuery, setSearchQuery] = React.useState("");
+            const [activeTab, setActiveTab] = React.useState("All");
 
-            <!-- Dynamic Popcornflix Browse Container -->
-            <div id="browseContainer">
-                <!-- Immersive Premium Hero Showcase Spotlight Box -->
-                <section class="hero-banner" id="heroBanner">
-                    <div class="hero-gradient-overlay"></div>
-                    <div class="hero-content">
-                        <span class="popcorn-tag">FEATURED SPOTLIGHT</span>
-                        <h1 id="heroTitle">Loading Blockbuster...</h1>
-                        <p class="hero-description">Stream this hit title completely free in Full Ultra HD audio and video quality straight from your local media vault cluster grid.</p>
-                        <div class="hero-actions">
-                            <button class="play-btn-primary" id="heroPlayBtn">▶ WATCH FREE</button>
+            // Filter logic sorting data based on search queries and navigation tabs
+            const filteredItems = mediaItems.filter(item => {
+                const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                      item.genre.toLowerCase().includes(searchQuery.toLowerCase());
+                const matchesTab = activeTab === "All" || item.category === activeTab;
+                return matchesSearch && matchesTab;
+            });
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    {/* Header Component Title Bar */}
+                    <header className="sticky top-0 z-50 bg-slate-900/95 border-b border-slate-800 backdrop-blur-md px-4 md:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center space-x-8 w-full sm:w-auto justify-between sm:justify-start">
+                            <h1 className="text-2xl font-black tracking-wider text-red-500">
+                                POPFLIX<span className="text-slate-100 font-light text-sm tracking-normal ml-1">.BDIX</span>
+                            </h1>
+                            <nav className="hidden md:flex space-x-6 text-sm font-medium text-slate-400">
+                                <button onClick={() => setActiveTab("All")} className={`hover:text-red-500 transition-colors ${activeTab === 'All' ? 'text-red-500 font-bold' : ''}`}>Home</button>
+                                <button onClick={() => setActiveTab("Movies")} className={`hover:text-red-500 transition-colors ${activeTab === 'Movies' ? 'text-red-500 font-bold' : ''}`}>Movies</button>
+                                <button onClick={() => setActiveTab("TV Series")} className={`hover:text-red-500 transition-colors ${activeTab === 'TV Series' ? 'text-red-500 font-bold' : ''}`}>TV Series</button>
+                                <button onClick={() => setActiveTab("Animation")} className={`hover:text-red-500 transition-colors ${activeTab === 'Animation' ? 'text-red-500 font-bold' : ''}`}>Animation</button>
+                            </nav>
                         </div>
-                    </div>
-                </section>
 
-                <!-- Cinematic Movie Rows -->
-                <section class="movie-section">
-                    <h2 class="section-title">🔥 Trending Now</h2>
-                    <div class="scroll-wrapper-box">
-                        <div class="horizontal-scroll" id="rowTrending"></div>
-                    </div>
-                </section>
+                        {/* Search Utility Bar Input Element */}
+                        <div className="relative w-full sm:w-80">
+                            <input 
+                                type="text" 
+                                placeholder="Search by title or genre..." 
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                class="w-full bg-slate-800 text-slate-200 pl-4 pr-4 py-2 rounded-lg text-sm border border-slate-700 focus:border-red-500 focus:outline-none transition-all placeholder-slate-500"
+                            />
+                        </div>
+                    </header>
 
-                <section class="movie-section">
-                    <h2 class="section-title">🌴 South Indian Hindi Dubbed</h2>
-                    <div class="scroll-wrapper-box">
-                        <div class="horizontal-scroll" id="rowSouthHindi"></div>
-                    </div>
-                </section>
+                    {/* Main UI Body Layout */}
+                    <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8">
+                        {/* Section Header */}
+                        <div className="flex items-center justify-between mb-8 border-b border-slate-800 pb-4">
+                            <h2 className="text-xl font-bold tracking-tight text-slate-200 flex items-center border-l-4 border-red-500 pl-3">
+                                {activeTab === "All" ? "Recently Indexed Local FTP Streams" : `${activeTab} Index Feed`}
+                            </h2>
+                            <span className="text-xs font-mono bg-slate-900 text-slate-400 border border-slate-800 px-3 py-1 rounded-full">
+                                Source: 172.16.50.14
+                            </span>
+                        </div>
 
-                <section class="movie-section">
-                    <h2 class="section-title">⭐ IMDb Top Rated Masterpieces</h2>
-                    <div class="scroll-wrapper-box">
-                        <div class="horizontal-scroll" id="rowIMDb"></div>
-                    </div>
-                </section>
+                        {/* Media Cards Multi-Column Grid */}
+                        {filteredItems.length === 0 ? (
+                            <div className="text-center py-20 text-slate-500">
+                                <p className="text-lg font-medium">No files matching your search criteria were located.</p>
+                                <p className="text-sm mt-1">Verify string inputs or clean active catalog filter tabs.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-6">
+                                {filteredItems.map((movie) => (
+                                    <a 
+                                        key={movie.id} 
+                                        href={movie.url} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="group relative bg-slate-900 rounded-lg overflow-hidden border border-slate-800 hover:border-slate-700 hover:scale-[1.02] transition-all duration-200 cursor-pointer shadow-lg flex flex-col justify-between"
+                                    >
+                                        <div className="relative aspect-[2/3] overflow-hidden bg-slate-800">
+                                            <img 
+                                                src={movie.poster} 
+                                                alt={movie.title} 
+                                                className="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-300" 
+                                            />
+                                            {/* Top Metadata Badges */}
+                                            <span className="absolute top-2 left-2 bg-black/70 text-red-400 font-mono text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider backdrop-blur-sm">
+                                                {movie.quality}
+                                            </span>
+                                            <span className="absolute top-2 right-2 bg-slate-900/90 text-slate-300 font-mono text-[10px] px-2 py-0.5 rounded backdrop-blur-sm">
+                                                {movie.year}
+                                            </span>
+                                        </div>
+                                        <div className="p-4 bg-slate-900/40 border-t border-slate-800/50">
+                                            <h3 className="font-semibold text-sm truncate group-hover:text-red-400 transition-colors" title={movie.title}>
+                                                {movie.title}
+                                            </h3>
+                                            <div className="flex items-center justify-between mt-2">
+                                                <span className="text-xs text-slate-500">{movie.genre}</span>
+                                                <span className="text-[10px] bg-red-950/40 text-red-400 border border-red-900/50 px-2 py-0.5 rounded-sm font-medium">
+                                                    Stream BDIX
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                ))}
+                            </div>
+                        )}
+                    </main>
 
-                <section class="movie-section">
-                    <h2 class="section-title">🧸 Animation Family Hits</h2>
-                    <div class="scroll-wrapper-box">
-                        <div class="horizontal-scroll" id="rowAnimation"></div>
-                    </div>
-                </section>
-            </div>
+                    {/* Basic Footer Elements */}
+                    <footer className="bg-slate-950 border-t border-slate-900 text-center py-6 text-xs text-slate-600">
+                        <p>© 2026 PopFlix Portal. Designed for private local local LAN content evaluation loops.</p>
+                    </footer>
+                </div>
+            );
+        }
 
-            <!-- Search Results Dashboard Area Wrapper -->
-            <div id="searchContainer" style="display: none;">
-                <h2 class="section-title" id="searchTitle">Search Results</h2>
-                <div class="media-grid" id="searchGrid"></div>
-            </div>
-
-        </main>
-    </div>
-
-    <!-- Video Theater Overlay Framework Screen Box -->
-    <div class="video-modal" id="videoModal">
-        <button class="close-modal" onclick="closeVideo()">✕ CLOSE</button>
-        <div class="video-container">
-            <video id="videoPlayer" controls autoplay></video>
-            <h2 id="modalVideoTitle" class="modal-title">Movie Title</h2>
-        </div>
-    </div>
-
-    <script src="renderer.js"></script>
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
