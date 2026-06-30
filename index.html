@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineZone Player</title>
+    <title>CineZone | Watch Free Movies & TV Shows</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -15,59 +15,57 @@
         <aside class="sidebar" id="appSidebar">
             <div class="logo">Cine<span>Zone</span></div>
             <nav class="nav-menu">
-                <div class="menu-header">🎬 MOVIES MAIN (SERVER .7)</div>
-                <button class="nav-item active" onclick="loadCategory('MOVIES_7', '/English Movies')">🇬🇧 English Movies</button>
-                <button class="nav-item" onclick="loadCategory('MOVIES_7', '/Hindi Movies')">🇮🇳 Hindi Movies</button>
-                <button class="nav-item" onclick="loadCategory('MOVIES_7', '/3D Movies')">👓 3D Movies</button>
-                
-                <div class="menu-header">🍿 MOVIES & SERIES (SERVER .14)</div>
-                <button class="nav-item" onclick="loadCategory('MOVIES_14', '/Animation Movies')">🧸 Animation</button>
-                <button class="nav-item" onclick="loadCategory('MOVIES_14', '/IMDb Top-250 Movies')">⭐ IMDb Top-250</button>
-                <button class="nav-item" onclick="loadCategory('MOVIES_14', '/KOREAN TV & WEB Series')">🇰🇷 Korean Series</button>
-                <button class="nav-item" onclick="loadCategory('MOVIES_14', '/SOUTH INDIAN MOVIES/Hindi Dubbed')">🌴 South Hindi Dubbed</button>
-
-                <div class="menu-header">🎮 ENTERTAINMENT & UTILITIES</div>
-                <button class="nav-item" onclick="loadCategory('MOVIES_7', '/PC Games')">🖥️ PC Games</button>
-                <button class="nav-item" onclick="loadCategory('MOVIES_7', '/Software')">💿 Software & Tutorials</button>
+                <button class="nav-item active" onclick="showSection('home')">🏠 Home</button>
+                <button class="nav-item" onclick="showSection('movies')">🎬 Movies</button>
+                <button class="nav-item" onclick="showSection('series')">📺 TV & Web Series</button>
             </nav>
-            <div class="path-display" id="currentPath">Server: MOVIES_7</div>
+            <div class="server-status">Connected to: 172.16.50.14</div>
         </aside>
 
         <main class="main-content">
-            <section class="featured-slider-container">
-                <div class="slider-track" id="sliderTrack"></div>
+            
+            <header class="popcorn-header">
+                <div class="search-box">
+                    <input type="text" id="globalSearch" placeholder="🔍 Search movies, TV shows by title..." oninput="searchLibrary()">
+                </div>
+            </nav>
+
+            <section class="hero-banner" id="heroBanner">
+                <div class="hero-gradient"></div>
+                <div class="hero-content">
+                    <span class="badge">POPULAR</span>
+                    <h1 id="heroTitle">Loading Feature...</h1>
+                    <button class="play-btn" id="heroPlayBtn">▶ Play Now</button>
+                </div>
             </section>
 
-            <header class="top-bar flex-column">
-                <div class="top-bar-row">
-                    <button id="backBtn" class="back-btn" onclick="goBack()">⬅ Back</button>
-                    <h1 id="categoryTitle">Library Directory</h1>
-                </div>
+            <div id="browseContainer">
+                <section class="movie-section">
+                    <h2 class="section-title">🔥 Trending 2026 Uploads</h2>
+                    <div class="horizontal-scroll" id="rowTrending"></div>
+                </section>
 
-                <div class="filter-controls-bar">
-                    <input type="text" id="nameSearchInput" class="filter-input text-search" placeholder="🔍 Search current files by title name..." oninput="applyFilters()">
+                <section class="movie-section">
+                    <h2 class="section-title">🌴 South Indian Hindi Dubbed</h2>
+                    <div class="horizontal-scroll" id="rowSouthHindi"></div>
+                </section>
 
-                    <select id="genreSelect" class="filter-input dropdown-select" onchange="applyFilters()">
-                        <option value="all">🎭 All Formats</option>
-                        <option value="1080p">1080p Ultra HD</option>
-                        <option value="720p">720p HD Quality</option>
-                        <option value="dual audio">Dual Audio [Multi]</option>
-                        <option value="hindi dubbed">Hindi Dubbed Only</option>
-                    </select>
+                <section class="movie-section">
+                    <h2 class="section-title">⭐ IMDb Top-250 Masterpieces</h2>
+                    <div class="horizontal-scroll" id="rowIMDb"></div>
+                </section>
 
-                    <select id="yearSelect" class="filter-input dropdown-select" onchange="applyFilters()">
-                        <option value="all">📅 All Years</option>
-                        <option value="2026">2026 Releases</option>
-                        <option value="2025">2025 Releases</option>
-                        <option value="2024">2024 Releases</option>
-                        <option value="older">Older Archive Folders</option>
-                    </select>
-                </div>
-            </header>
-
-            <div class="media-grid" id="mediaGrid">
-                <div class="loading">Select a category on the sidebar layout menu to initialize stream scanning...</div>
+                <section class="movie-section">
+                    <h2 class="section-title">🧸 Animation Favorites</h2>
+                    <div class="horizontal-scroll" id="rowAnimation"></div>
+                </section>
             </div>
+
+            <div id="searchContainer" style="display: none;">
+                <h2 class="section-title" id="searchTitle">Search Results</h2>
+                <div class="media-grid" id="searchGrid"></div>
+            </div>
+
         </main>
     </div>
 
@@ -75,7 +73,7 @@
         <button class="close-modal" onclick="closeVideo()">✕ Close</button>
         <div class="video-container">
             <video id="videoPlayer" controls autoplay></video>
-            <h2 id="modalVideoTitle" class="modal-title">Movie Playback Target</h2>
+            <h2 id="modalVideoTitle" class="modal-title">Movie Playback</h2>
         </div>
     </div>
 
