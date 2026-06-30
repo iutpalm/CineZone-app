@@ -1,145 +1,120 @@
-let currentServer = 'MOVIES_7';
-let currentDirectoryPath = '/English Movies';
-let serverPathHistory = [];
-let loadedInventoryItems = [];
+// Master Local Store Cache Memory
+let masterLibrary = [];
 
-// Automated Trending Carousel Configuration Array 
-const trendingBanners = [
-    { title: "Aadu 3 (2026) [1080p Dual Audio]", banner: "https://images6.alphacoders.com/135/1351676.jpeg" },
-    { title: "The Raja Saab (2026) [Multi Audio]", banner: "https://images8.alphacoders.com/134/1347008.jpeg" },
-    { title: "Ustaad Bhagat Singh (2026)", banner: "https://images8.alphacoders.com/131/1314995.jpeg" }
+// Popular Hero Backup wallpapers
+const heroShowcases = [
+    { title: "Aadu 3 (2026)", img: "https://images6.alphacoders.com/135/1351676.jpeg" },
+    { title: "The Raja Saab (2026)", img: "https://images8.alphacoders.com/134/1347008.jpeg" },
+    { title: "Ustaad Bhagat Singh (2026)", img: "https://images8.alphacoders.com/131/1314995.jpeg" }
 ];
 
-let activeSlideNum = 0;
-
 document.addEventListener('DOMContentLoaded', () => {
-    initFeaturedCarousel();
-    loadCategory(currentServer, currentDirectoryPath);
+    buildPopcornflixDashboard();
 });
 
-function initFeaturedCarousel() {
-    const track = document.getElementById('sliderTrack');
-    track.innerHTML = '';
-    trendingBanners.forEach(m => {
-        const slide = document.createElement('div');
-        slide.className = 'slide';
-        slide.style.backgroundImage = `url('${m.banner}')`;
-        slide.innerHTML = `
-            <div class="slide-gradient"></div>
-            <div class="slide-content">
-                <span class="slide-tag">Trending 2026 Uploads</span>
-                <h2 class="slide-title">${m.title}</h2>
-            </div>
-        `;
-        track.appendChild(slide);
-    });
-    setInterval(() => {
-        activeSlideNum = (activeSlideNum + 1) % trendingBanners.length;
-        track.style.transform = `translateX(-${activeSlideNum * 100}%)`;
-    }, 5000);
+async function buildPopcornflixDashboard() {
+    setupHeroBanner();
+    
+    // Define the scanning tasks for server 172.16.50.14
+    const pathways = [
+        { rowId: 'rowTrending', path: '/English Movies (1080p)/(2026)' },
+        { rowId: 'rowSouthHindi', path: '/SOUTH INDIAN MOVIES/Hindi Dubbed/(2026)' },
+        { rowId: 'rowIMDb', path: '/IMDb Top-250 Movies' },
+        { rowId: 'rowAnimation', path: '/Animation Movies (1080p)' }
+    ];
+
+    // Concurrently fetch lists across the network link
+    for (const target of pathways) {
+        const result = await window.dhakaFlixAPI.fetchDirectory({ 
+            serverKey: 'MOVIES_14', 
+            targetPath: target.path 
+        });
+
+        if (!result.error) {
+            // Clean out empty directory markers, process real film media elements
+            const videos = result.filter(file => !file.isDirectory && file.name.toLowerCase().match(/\.(mp4|mkv|webm|avi)$/));
+            
+            // Map the media items into the master search registry
+            videos.forEach(v => masterLibrary.push(v));
+            
+            populateRow(target.rowId, videos);
+        } else {
+            document.getElementById(target.rowId).innerHTML = `<div style="color:var(--text-muted);font-size:13px;">Row temporary unavailable offline.</div>`;
+        }
+    }
 }
 
-// Core Navigation Entry System Handler
-async function loadCategory(serverKey, targetPath) {
-    currentServer = serverKey;
-    currentDirectoryPath = targetPath;
-    
-    document.getElementById('currentPath').innerText = `${serverKey}: ${targetPath}`;
-    document.getElementById('backBtn').style.display = serverPathHistory.length === 0 ? 'none' : 'inline-block';
-    
-    const grid = document.getElementById('mediaGrid');
-    grid.innerHTML = '<div class="loading">Scanning active FTP cluster streams...</div>';
+function populateRow(rowId, elementsList) {
+    const targetRow = document.getElementById(rowId);
+    targetRow.innerHTML = '';
 
-    const items = await window.CineZoneAPI.fetchDirectory({ serverKey, targetPath });
-
-    if (items.error) {
-        grid.innerHTML = `<div class="error-msg">⚠️ Host connection timeout.<br><small>${items.error}</small></div>`;
+    if (elementsList.length === 0) {
+        targetRow.innerHTML = '<div style="color:var(--text-muted);padding:10px;">No movies found inside this path folder.</div>';
         return;
     }
 
-    // Capture standard items, stripping hidden data
-    loadedInventoryItems = items;
-    
-    // Clear inputs on folder change
-    document.getElementById('nameSearchInput').value = '';
-    document.getElementById('genreSelect').value = 'all';
-    document.getElementById('yearSelect').value = 'all';
-
-    renderMediaGrid(loadedInventoryItems);
-}
-
-function renderMediaGrid(dataset) {
-    const grid = document.getElementById('mediaGrid');
-    grid.innerHTML = '';
-
-    if (dataset.length === 0) {
-        grid.innerHTML = '<div class="loading">No entries match your search criteria.</div>';
-        return;
-    }
-
-    dataset.forEach(item => {
+    elementsList.forEach(movie => {
         const card = document.createElement('div');
-        card.className = 'card';
-        const isDir = item.isDirectory;
-        
+        card.className = 'popcorn-card';
         card.innerHTML = `
-            <div class="card-icon">${isDir ? '📁' : '🎬'}</div>
-            <div class="card-info">
-                <div class="card-title" title="${item.name}">${item.name}</div>
-                <div class="card-type">${isDir ? 'Folder/Category' : 'Playable Video Link'}</div>
-            </div>
+            <div class="poster-frame">🎬</div>
+            <div class="movie-name" title="${movie.name}">${movie.name}</div>
         `;
-
-        card.onclick = () => {
-            if (isDir) {
-                serverPathHistory.push(currentDirectoryPath);
-                const completeNextPath = currentDirectoryPath === '/' ? `/${item.name}` : `${currentDirectoryPath}/${item.name}`;
-                loadCategory(currentServer, completeNextPath);
-            } else {
-                playVideo(item.url, item.name);
-            }
-        };
-        grid.appendChild(card);
+        card.onclick = () => playVideo(movie.url, movie.name);
+        targetRow.appendChild(card);
     });
 }
 
-// Global Filter Logic Layer Engine
-function applyFilters() {
-    const searchString = document.getElementById('nameSearchInput').value.toLowerCase();
-    const formatFilter = document.getElementById('genreSelect').value.toLowerCase();
-    const yearFilter = document.getElementById('yearSelect').value;
-
-    const filtered = loadedInventoryItems.filter(item => {
-        const matchTitle = item.name.toLowerCase().includes(searchString);
-        
-        // Format Filtering Logic Match Lookups
-        let matchFormat = true;
-        if (formatFilter !== 'all') {
-            matchFormat = item.name.toLowerCase().includes(formatFilter);
-        }
-
-        // Year Isolation Lookups (Checks strings or folder names like "(2026)")
-        let matchYear = true;
-        if (yearFilter !== 'all') {
-            if (yearFilter === 'older') {
-                matchYear = !['2023', '2024', '2025', '2026'].some(yr => item.name.includes(yr));
-            } else {
-                matchYear = item.name.includes(yearFilter);
-            }
-        }
-
-        // Keep directories visible for navigation, apply filters strictly to video files
-        return item.isDirectory || (matchTitle && matchFormat && matchYear);
-    });
-
-    renderMediaGrid(filtered);
+function setupHeroBanner() {
+    const chooseFeatured = heroShowcases[Math.floor(Math.random() * heroShowcases.length)];
+    const banner = document.getElementById('heroBanner');
+    banner.style.backgroundImage = `url('${chooseFeatured.img}')`;
+    document.getElementById('heroTitle').innerText = chooseFeatured.title;
+    
+    document.getElementById('heroPlayBtn').onclick = () => {
+        // Find if the title exists in the master list, else trigger search feedback
+        document.getElementById('globalSearch').value = chooseFeatured.title;
+        searchLibrary();
+    };
 }
 
-function goBack() {
-    if (serverPathHistory.length > 0) {
-        const previous = serverPathHistory.pop();
-        loadCategory(currentServer, previous);
+// Global Instant Search Execution Layer
+function searchLibrary() {
+    const keyword = document.getElementById('globalSearch').value.toLowerCase().trim();
+    const browseView = document.getElementById('browseContainer');
+    const searchView = document.getElementById('searchContainer');
+    const searchGrid = document.getElementById('searchGrid');
+
+    if (keyword === '') {
+        browseView.style.display = 'block';
+        searchView.style.display = 'none';
+        return;
     }
+
+    browseView.style.display = 'none';
+    searchView.style.display = 'block';
+    
+    // Filter out matches from the cached memory registry
+    const matched = masterLibrary.filter(item => item.name.toLowerCase().includes(keyword));
+    
+    searchGrid.innerHTML = '';
+    document.getElementById('searchTitle').innerText = `Search results for: "${keyword}" (${matched.length})`;
+
+    if (matched.length === 0) {
+        searchGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">No exact matching titles found in memory.</div>';
+        return;
+    }
+
+    matched.forEach(movie => {
+        const card = document.createElement('div');
+        card.className = 'popcorn-card';
+        card.innerHTML = `
+            <div class="poster-frame">🎬</div>
+            <div class="movie-name" title="${movie.name}">${movie.name}</div>
+        `;
+        card.onclick = () => playVideo(movie.url, movie.name);
+        searchGrid.appendChild(card);
+    });
 }
 
 function playVideo(url, title) {
